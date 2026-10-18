@@ -1,0 +1,180 @@
+{
+  "name": "http-errors",
+  "description": "4xx responses map to error kinds and are never retried.",
+  "calls": [
+    {
+      "call": "start_session",
+      "args": {
+        "goal": "Decide whether customer C-4411 gets a refund"
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/sessions",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            },
+            "body": {
+              "goal": "Decide whether customer C-4411 gets a refund"
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70"
+        }
+      }
+    },
+    {
+      "call": "propose",
+      "args": {
+        "action": "refunds.issue",
+        "proposal": {
+          "customer_id": "C-4411",
+          "order_id": "O-9012",
+          "amount": 100,
+          "currency": "USD"
+        },
+        "reasoning": "Customer is new, no previous refunds, item arrived damaged.",
+        "evidence": {
+          "customer.refund_count": 0
+        },
+        "tags": [
+          "support"
+        ]
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/actions",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance",
+              "idempotency-key": "*"
+            },
+            "body": {
+              "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70",
+              "action": "refunds.issue",
+              "proposal": {
+                "customer_id": "C-4411",
+                "order_id": "O-9012",
+                "amount": 100,
+                "currency": "USD"
+              },
+              "reasoning": "Customer is new, no previous refunds, item arrived damaged.",
+              "evidence": {
+                "customer.refund_count": 0
+              },
+              "tags": [
+                "support"
+              ]
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": {
+              "type": "about:blank",
+              "title": "One or more validation errors occurred.",
+              "status": 400
+            }
+          }
+        }
+      ],
+      "expect": {
+        "error": "validation"
+      }
+    },
+    {
+      "call": "get_decision",
+      "args": {
+        "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44"
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "GET",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            }
+          },
+          "response": {
+            "status": 404,
+            "body": {
+              "type": "about:blank",
+              "title": "Not Found",
+              "status": 404
+            }
+          }
+        }
+      ],
+      "expect": {
+        "error": "not_found"
+      }
+    },
+    {
+      "call": "report",
+      "args": {
+        "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+        "success": true
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44/result",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            },
+            "body": {
+              "success": true
+            }
+          },
+          "response": {
+            "status": 409,
+            "body": {
+              "type": "about:blank",
+              "title": "Conflict",
+              "status": 409
+            }
+          }
+        }
+      ],
+      "expect": {
+        "error": "conflict"
+      }
+    },
+    {
+      "call": "get_decision",
+      "args": {
+        "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44"
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "GET",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": null
+          }
+        }
+      ],
+      "expect": {
+        "error": "authentication"
+      }
+    }
+  ]
+}

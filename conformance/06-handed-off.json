@@ -1,0 +1,110 @@
+{
+  "name": "handed-off",
+  "description": "human_only: propose raises handed_off even with wait_for_approval; no polling.",
+  "calls": [
+    {
+      "call": "start_session",
+      "args": {
+        "goal": "Decide whether customer C-4411 gets a refund"
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/sessions",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            },
+            "body": {
+              "goal": "Decide whether customer C-4411 gets a refund"
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70"
+        }
+      }
+    },
+    {
+      "call": "propose",
+      "args": {
+        "action": "refunds.issue",
+        "proposal": {
+          "customer_id": "C-4411",
+          "order_id": "O-9012",
+          "amount": 25000,
+          "currency": "USD"
+        },
+        "reasoning": "Customer is new, no previous refunds, item arrived damaged.",
+        "evidence": {
+          "customer.refund_count": 0
+        },
+        "tags": [
+          "support"
+        ],
+        "wait_for_approval": true
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/actions",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance",
+              "idempotency-key": "*"
+            },
+            "body": {
+              "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70",
+              "action": "refunds.issue",
+              "proposal": {
+                "customer_id": "C-4411",
+                "order_id": "O-9012",
+                "amount": 25000,
+                "currency": "USD"
+              },
+              "reasoning": "Customer is new, no previous refunds, item arrived damaged.",
+              "evidence": {
+                "customer.refund_count": 0
+              },
+              "tags": [
+                "support"
+              ]
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+              "route": "human_only",
+              "status": "handed_off",
+              "reason": "Limit: Agent refund limit (500)",
+              "decided_by": "policy",
+              "findings": [],
+              "tags": [
+                "support"
+              ],
+              "handoff_id": "0199f3c2-9c51-7f22-b6d4-3a0e1f8c2b55",
+              "expires_at": null,
+              "fail_mode": "closed"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "error": "handed_off",
+        "fields": {
+          "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+          "handoff_id": "0199f3c2-9c51-7f22-b6d4-3a0e1f8c2b55"
+        }
+      }
+    }
+  ]
+}

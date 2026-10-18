@@ -1,0 +1,114 @@
+{
+  "name": "resume-released",
+  "description": "A handed-off action is released by a human; the agent waits for it with get_decision, commits and reports.",
+  "calls": [
+    {
+      "call": "get_decision",
+      "args": {
+        "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+        "wait": true
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "GET",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44?wait=30s",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+              "route": "human_only",
+              "status": "handed_off",
+              "reason": "Limit: Agent refund limit (500)",
+              "decided_by": "policy",
+              "findings": [],
+              "tags": [
+                "support"
+              ],
+              "handoff_id": "0199f3c2-9c51-7f22-b6d4-3a0e1f8c2b55",
+              "expires_at": null,
+              "fail_mode": "closed"
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "GET",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44?wait=30s",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+              "route": "human_only",
+              "status": "released",
+              "reason": "Limit: Agent refund limit (500)",
+              "decided_by": "policy",
+              "findings": [],
+              "tags": [
+                "support"
+              ],
+              "handoff_id": "0199f3c2-9c51-7f22-b6d4-3a0e1f8c2b55",
+              "expires_at": null,
+              "fail_mode": "closed"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+          "route": "human_only",
+          "status": "released",
+          "handoff_id": "0199f3c2-9c51-7f22-b6d4-3a0e1f8c2b55"
+        }
+      }
+    },
+    {
+      "call": "report",
+      "args": {
+        "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+        "success": true,
+        "output": {
+          "refund_id": "R-1"
+        }
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44/result",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            },
+            "body": {
+              "success": true,
+              "output": {
+                "refund_id": "R-1"
+              }
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+              "status": "committed"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "status": "committed"
+        }
+      }
+    }
+  ]
+}

@@ -22,5 +22,8 @@ export default defineConfig({
       typeCheck: true,
     },
   },
-  fmt: {},
+  fmt: {
+    // Vendored byte-for-byte from rabbix-platform (source of truth); keep diffs against it empty.
+    ignorePatterns: ["conformance/**"],
+  },
 });

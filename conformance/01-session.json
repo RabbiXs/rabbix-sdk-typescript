@@ -1,0 +1,38 @@
+{
+  "name": "session",
+  "description": "Start and end a session; every request carries the bearer key.",
+  "calls": [
+    {
+      "call": "start_session",
+      "args": { "agent": "refund-agent", "goal": "Decide whether customer C-4411 gets a refund", "metadata": { "ticket": "T-1" } },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/sessions",
+            "headers": { "authorization": "Bearer rbx_test_conformance" },
+            "body": { "agent": "refund-agent", "goal": "Decide whether customer C-4411 gets a refund", "metadata": { "ticket": "T-1" } }
+          },
+          "response": { "status": 201, "body": { "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70" } }
+        }
+      ],
+      "expect": { "result": { "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70" } }
+    },
+    {
+      "call": "end_session",
+      "args": { "status": "completed", "summary": "Refund issued" },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/sessions/0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70/end",
+            "headers": { "authorization": "Bearer rbx_test_conformance" },
+            "body": { "status": "completed", "summary": "Refund issued" }
+          },
+          "response": { "status": 200, "body": { "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70", "status": "completed" } }
+        }
+      ],
+      "expect": { "result": { "status": "completed" } }
+    }
+  ]
+}

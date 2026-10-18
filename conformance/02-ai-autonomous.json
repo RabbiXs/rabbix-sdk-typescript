@@ -1,0 +1,149 @@
+{
+  "name": "ai-autonomous",
+  "description": "Within limits: approved immediately; the agent commits and reports the result.",
+  "calls": [
+    {
+      "call": "start_session",
+      "args": {
+        "goal": "Decide whether customer C-4411 gets a refund"
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/sessions",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            },
+            "body": {
+              "goal": "Decide whether customer C-4411 gets a refund"
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70"
+        }
+      }
+    },
+    {
+      "call": "propose",
+      "args": {
+        "action": "refunds.issue",
+        "proposal": {
+          "customer_id": "C-4411",
+          "order_id": "O-9012",
+          "amount": 100,
+          "currency": "USD"
+        },
+        "reasoning": "Customer is new, no previous refunds, item arrived damaged.",
+        "evidence": {
+          "customer.refund_count": 0
+        },
+        "tags": [
+          "support"
+        ]
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/actions",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance",
+              "idempotency-key": "*"
+            },
+            "body": {
+              "session_id": "0199f3c2-7a1e-7b3c-9d2f-5e8a1b4c6d70",
+              "action": "refunds.issue",
+              "proposal": {
+                "customer_id": "C-4411",
+                "order_id": "O-9012",
+                "amount": 100,
+                "currency": "USD"
+              },
+              "reasoning": "Customer is new, no previous refunds, item arrived damaged.",
+              "evidence": {
+                "customer.refund_count": 0
+              },
+              "tags": [
+                "support"
+              ]
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+              "route": "ai_autonomous",
+              "status": "approved",
+              "reason": "Claims supported by evidence",
+              "decided_by": "classifier",
+              "findings": [],
+              "tags": [
+                "support"
+              ],
+              "handoff_id": null,
+              "expires_at": null,
+              "fail_mode": "closed"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+          "route": "ai_autonomous",
+          "status": "approved",
+          "degraded": false
+        }
+      }
+    },
+    {
+      "call": "report",
+      "args": {
+        "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+        "success": true,
+        "output": {
+          "refund_id": "R-1"
+        }
+      },
+      "exchanges": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/v1/actions/0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44/result",
+            "headers": {
+              "authorization": "Bearer rbx_test_conformance"
+            },
+            "body": {
+              "success": true,
+              "output": {
+                "refund_id": "R-1"
+              }
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "action_id": "0199f3c2-8b40-7e11-a5c3-2f9d0e7b1a44",
+              "status": "committed"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "result": {
+          "status": "committed"
+        }
+      }
+    }
+  ]
+}
