@@ -1,0 +1,46 @@
+{
+  "name": "@rabbix/sdk",
+  "version": "0.1.0",
+  "description": "RabbiX SDK for TypeScript: govern what autonomous AI agents commit",
+  "homepage": "https://github.com/RabbiXs/rabbix-sdk-typescript#readme",
+  "bugs": {
+    "url": "https://github.com/RabbiXs/rabbix-sdk-typescript/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "RabbiX",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RabbiXs/rabbix-sdk-typescript.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node_modules/.bin/vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "prepublishOnly": "vp run build",
+    "prepare": "vp config"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "bumpp": "^12.3.0",
+    "typescript": "^7.0.2",
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.14.0",
+      "onFail": "download"
+    }
+  }
+}

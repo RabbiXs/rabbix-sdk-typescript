@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-test-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install -g vite-plus@1.3.0
+      - run: vp install
+      - run: vp check
+      - run: vp test
+      # Local binary: global vp pack resolves TypeScript (tsgo) from its own install dir, not the project
+      - run: ./node_modules/.bin/vp pack
